@@ -1,30 +1,55 @@
-package com.example.CustomTts.data // Stelle sicher, dass der Paketname korrekt ist
+package com.example.CustomTts.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.datastore.preferences.core.stringPreferencesKey // <-- Import hinzufügen!
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 
-// DataStore Instanz (von Schritt 1)
+// DataStore instance
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "tts_settings")
 
-// Objekt zum Halten der Schlüssel hinzufügen
 object PrefKeys {
-    // Ein Schlüssel für die Backend-URL (Typ: String)
+    // Backend endpoint URL
     val BACKEND_URL = stringPreferencesKey("backend_url")
 
-    // Ein Schlüssel für den API-Key (Typ: String)
+    // API key (optional)
     val API_KEY = stringPreferencesKey("api_key")
 
-    // Ein Schlüssel für das Model (Typ: String)
+    // Model name (optional — some APIs like xAI don't use one)
     val TTS_MODEL = stringPreferencesKey("tts_model")
 
-    // Ein Schlüssel für die Stimme (Typ: String)
+    // Voice name / voice_id
     val TTS_VOICE = stringPreferencesKey("tts_voice")
 
-    // A key for the response format
+    // Requested response/audio format (mp3, wav, opus, pcm, ...)
     val RESPONSE_FORMAT = stringPreferencesKey("response_format")
 
-    // Hier könntest du bei Bedarf weitere Schlüssel für andere Einstellungen hinzufügen
+    // Request body style: "openai", "speechify" or "xai"
+    val API_STYLE = stringPreferencesKey("api_style")
+
+    // Language code sent with xAI-style requests (optional)
+    val LANGUAGE = stringPreferencesKey("language")
+
+    // Automatically save each generation as an audio file
+    val AUTO_SAVE = booleanPreferencesKey("auto_save")
+
+    // SAF tree URI of the folder generations are saved to
+    val SAVE_FOLDER_URI = stringPreferencesKey("save_folder_uri")
+}
+
+object ApiStyles {
+    const val OPENAI = "openai"
+    const val SPEECHIFY = "speechify"
+    const val XAI = "xai"
+
+    val ALL = listOf(OPENAI, SPEECHIFY, XAI)
+
+    fun label(style: String): String = when (style) {
+        OPENAI -> "OpenAI (input/voice/model)"
+        SPEECHIFY -> "Speechify (input/voice_id/audio_format)"
+        XAI -> "xAI (text/voice_id/language)"
+        else -> style
+    }
 }
