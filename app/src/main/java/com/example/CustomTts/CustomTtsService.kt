@@ -524,8 +524,8 @@ class CustomTtsService : TextToSpeechService() {
                     outIndex >= 0 -> {
                         if (!callbackStarted) {
                             val outFormat = codec.outputFormat
-                            val sampleRate = outFormat.getInt(MediaFormat.KEY_SAMPLE_RATE)
-                            val channels = outFormat.getInt(MediaFormat.KEY_CHANNEL_COUNT)
+                            val sampleRate = outFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+                            val channels = outFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
                             Log.d(TAG, "Decoded PCM: rate=$sampleRate, channels=$channels")
                             if (callback.start(sampleRate, AudioFormat.ENCODING_PCM_16BIT, channels) == TextToSpeech.ERROR) {
                                 Log.e(TAG, "callback.start failed for decoded audio")
