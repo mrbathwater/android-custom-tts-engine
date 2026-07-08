@@ -26,8 +26,10 @@ import com.example.CustomTts.R
 import com.example.CustomTts.data.ApiStyles
 import com.example.CustomTts.data.PrefKeys
 import com.example.CustomTts.data.settingsDataStore
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -332,33 +334,41 @@ fun SettingsScreen(
                             val savedMsg = context.getString(R.string.settings_snackbar_saved)
                             val errorMsg = context.getString(R.string.settings_snackbar_save_error)
 
-                            try {
-                                val urlToSave = urlState.trim()
-                                // Only the URL is required — model, voice, language and key
-                                // are optional so arbitrary endpoints (e.g. xAI) work.
-                                if (urlToSave.isBlank()) {
-                                    snackbarHostState.showSnackbar(validationErrorMsg)
-                                    return@launch
-                                }
+                            val urlToSave = urlState.trim()
+                            // Only the URL is required — model, voice, language and key
+                            // are optional so arbitrary endpoints (e.g. xAI) work.
+                            if (urlToSave.isBlank()) {
+                                snackbarHostState.showSnackbar(validationErrorMsg)
+                                return@launch
+                            }
 
-                                context.settingsDataStore.edit { settings ->
-                                    settings[PrefKeys.BACKEND_URL] = urlToSave
-                                    settings[PrefKeys.API_KEY] = apiKeyState
-                                    settings[PrefKeys.TTS_MODEL] = modelState.trim()
-                                    settings[PrefKeys.TTS_VOICE] = voiceState.trim()
-                                    settings[PrefKeys.RESPONSE_FORMAT] = formatState
-                                    settings[PrefKeys.API_STYLE] = styleState
-                                    settings[PrefKeys.LANGUAGE] = languageState.trim()
-                                    settings[PrefKeys.AUTO_SAVE] = autoSaveState
-                                    settings[PrefKeys.SAVE_FOLDER_URI] = saveFolderState
+                            val saved = try {
+                                // NonCancellable so leaving the screen right after
+                                // tapping Save can't abort the write mid-flight.
+                                withContext(NonCancellable) {
+                                    context.settingsDataStore.edit { settings ->
+                                        settings[PrefKeys.BACKEND_URL] = urlToSave
+                                        settings[PrefKeys.API_KEY] = apiKeyState
+                                        settings[PrefKeys.TTS_MODEL] = modelState.trim()
+                                        settings[PrefKeys.TTS_VOICE] = voiceState.trim()
+                                        settings[PrefKeys.RESPONSE_FORMAT] = formatState
+                                        settings[PrefKeys.API_STYLE] = styleState
+                                        settings[PrefKeys.LANGUAGE] = languageState.trim()
+                                        settings[PrefKeys.AUTO_SAVE] = autoSaveState
+                                        settings[PrefKeys.SAVE_FOLDER_URI] = saveFolderState
+                                    }
                                 }
-
                                 Log.i("SettingsScreen", "Settings saved!")
-                                snackbarHostState.showSnackbar(savedMsg)
-
+                                true
                             } catch (e: Exception) {
                                 Log.e("SettingsScreen", "Failed to save settings", e)
-                                snackbarHostState.showSnackbar(errorMsg)
+                                false
+                            }
+
+                            try {
+                                snackbarHostState.showSnackbar(if (saved) savedMsg else errorMsg)
+                            } catch (_: kotlinx.coroutines.CancellationException) {
+                                // User navigated away before the snackbar finished — harmless.
                             }
                         }
                     },

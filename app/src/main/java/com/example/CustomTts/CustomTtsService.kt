@@ -192,7 +192,7 @@ class CustomTtsService : TextToSpeechService() {
     //--------------------------------------------------------------------------
 
     override fun onIsLanguageAvailable(lang: String?, country: String?, variant: String?): Int {
-        Log.d(TAG, "onIsLanguageAvailable: lang=$lang, country=$country, variant=$variant")
+        // No log here — the framework enumerates every locale, flooding logcat.
         // The backend decides what it supports — accept any language so the engine
         // can be used with arbitrary endpoints.
         return if (lang.isNullOrBlank()) TextToSpeech.LANG_NOT_SUPPORTED

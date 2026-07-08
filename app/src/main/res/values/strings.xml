@@ -30,6 +30,10 @@
     <string name="main_screen_text_1">Main Application Screen (Compose)</string>
     <string name="main_screen_text_2">TTS Engine is active in the background.</string>
     <string name="main_screen_text_3">Click the gear icon in the top right for settings.</string>
+    <string name="main_test_title">Test the engine</string>
+    <string name="main_test_text_label">Text to speak</string>
+    <string name="main_test_button">Test Speak</string>
+    <string name="main_open_tts_settings">Open Android TTS Settings</string>
     <string name="app_name">CustomTTS</string>
     <string name="tts_engine_label">CustomTTS Engine</string>
 
