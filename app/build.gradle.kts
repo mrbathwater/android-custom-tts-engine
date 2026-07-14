@@ -104,6 +104,9 @@ dependencies {
     // DataStore Preferences
     implementation("androidx.datastore:datastore-preferences:1.1.1") // Oder aktuellste Version
 
+    // DocumentFile für SAF-Ordnerzugriff (Auto-Save)
+    implementation("androidx.documentfile:documentfile:1.0.1")
+
     // ---- Jetpack Compose Abhängigkeiten (Bleiben) ----
     val composeBomVersion = "2024.06.00" // Oder aktuellste Version prüfen
     implementation(platform("androidx.compose:compose-bom:$composeBomVersion"))
